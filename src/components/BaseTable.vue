@@ -91,8 +91,12 @@ export default {
   },
   methods: {
     onClickSort(key) {
-      this.sort.key = key;
-      this.sort.direction = this.sort.direction === "asc" ? "desc" : "asc";
+      if (this.sort.key === key) {
+        this.sort.direction = this.sort.direction === "asc" ? "desc" : "asc";
+      } else {
+        this.sort.key = key;
+        this.sort.direction = "desc";
+      }
     },
     defineSortClass(key) {
       return this.sort.key === key ? `sort--${this.sort.direction}` : "";
@@ -108,7 +112,6 @@ export default {
 
   width: 0;
   height: 0;
-  margin: 4px 4px 0 3px;
 
   background: transparent;
   border: solid 5px transparent;
