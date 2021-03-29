@@ -11,11 +11,11 @@
               v-if="col.visible"
               @click="onClickSort(col.key)"
               :key="`col-${colIndex}`"
-              class="table__th relative py-4 px-6 font-bold uppercase text-sm border-b cursor-pointer bg-gray-200 whitespace-nowrap"
+              class="table__th relative p-3 font-bold uppercase text-sm border-b cursor-pointer bg-gray-200 whitespace-nowrap"
             >
               <div class="flex items-center">
                 <span>{{ col.label }}</span>
-                <i :class="defineSortClass(col.key)" class="sort right-5"></i>
+                <i :class="defineSortClass(col.key)" class="arrow right-5"></i>
               </div>
             </th>
           </template>
@@ -24,31 +24,35 @@
       <tbody>
         <tr
           class="cursor-pointer hover:bg-gray-100"
-          v-for="(row, rowIndex) of filteredRows"
+          v-for="(row, rowIndex) of paginatedRows"
           :key="`row-${rowIndex}`"
         >
           <template v-for="(td, tdIndex) of columns">
-            <td
-              :key="`td-${tdIndex}`"
-              v-if="td.visible"
-              class="py-4 px-6 border-b"
-            >
+            <td :key="`td-${tdIndex}`" v-if="td.visible" class="p-3 border-b">
               {{ row[td.key] }}
             </td>
           </template>
         </tr>
       </tbody>
     </table>
+    <base-pagination
+      v-if="pagesNumber"
+      :pagesNumber="pagesNumber"
+      :page="pagination.page"
+      @on-change-page="onChangePage"
+    />
   </div>
 </template>
 
 <script>
 // todo: throttle: filter
+import BasePagination from "@/components/BasePagination.vue";
 import BaseInput from "@/components/BaseInput.vue";
 export default {
   name: "BaseTable",
   components: {
     BaseInput,
+    BasePagination,
   },
   props: {
     columns: {
@@ -65,6 +69,16 @@ export default {
     },
   },
   computed: {
+    pagesNumber() {
+      return Math.ceil(this.filteredRows.length / this.pagination.rowsPerPage);
+    },
+    endIndexPaginate() {
+      return this.pagination.rowsPerPage * this.pagination.page;
+    },
+    startIndexPaginate() {
+      return this.endIndexPaginate - this.pagination.rowsPerPage;
+    },
+
     sortedRows() {
       if (this.sort.key) {
         const normalize = this.sort.direction === "asc" ? 1 : -1;
@@ -99,6 +113,12 @@ export default {
         return this.sortedRows;
       }
     },
+    paginatedRows() {
+      return this.filteredRows.slice(
+        this.startIndexPaginate,
+        this.endIndexPaginate
+      );
+    },
   },
   data() {
     return {
@@ -109,6 +129,10 @@ export default {
       filter: {
         value: null,
         placeholder: "Search",
+      },
+      pagination: {
+        rowsPerPage: 50,
+        page: 1,
       },
     };
   },
@@ -121,15 +145,18 @@ export default {
         this.sort.direction = "desc";
       }
     },
+    onChangePage(page) {
+      this.pagination.page = page;
+    },
     defineSortClass(key) {
-      return this.sort.key === key ? `sort--${this.sort.direction}` : "";
+      return this.sort.key === key ? `arrow--${this.sort.direction}` : "";
     },
   },
 };
 </script>
 
 <style>
-.sort {
+.arrow {
   position: absolute;
   right: 0;
 
@@ -144,16 +171,16 @@ export default {
   opacity: 0;
 }
 
-.sort--desc,
-.sort--asc {
+.arrow--desc,
+.arrow--asc {
   opacity: 1;
 }
 
-.sort--desc {
+.arrow--desc {
   transform: rotate(-180deg);
 }
 
-.table__th:hover .sort {
+.table__th:hover .arrow {
   opacity: 0.5;
 }
 </style>
