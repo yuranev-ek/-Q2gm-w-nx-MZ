@@ -54,13 +54,14 @@
       v-if="pagesNumber"
       :pagesNumber="pagesNumber"
       :page="pagination.page"
-      @on-change-page="onChangePage"
+      @on-change-page="setPage"
     />
   </div>
 </template>
 
 <script>
 // todo: throttle: filter
+// todo: apply filter after click button
 import BasePagination from "@/components/BasePagination.vue";
 import BaseInput from "@/components/BaseInput.vue";
 export default {
@@ -85,7 +86,7 @@ export default {
   },
   computed: {
     pagesNumber() {
-      return Math.ceil(this.filteredRows.length / this.pagination.rowsPerPage);
+      return Math.ceil(this.filterRows().length / this.pagination.rowsPerPage);
     },
     endIndexPaginate() {
       return this.pagination.rowsPerPage * this.pagination.page;
@@ -114,22 +115,8 @@ export default {
         return this.rows;
       }
     },
-    filteredRows() {
-      if (this.filter.value) {
-        return this.sortedRows.filter((row) => {
-          const dirtyValuesOfRow = JSON.stringify(Object.values(row));
-          return (
-            dirtyValuesOfRow
-              .toLowerCase()
-              .indexOf(this.filter.value.toLowerCase()) !== -1
-          );
-        });
-      } else {
-        return this.sortedRows;
-      }
-    },
     paginatedRows() {
-      return this.filteredRows.slice(
+      return this.filterRows().slice(
         this.startIndexPaginate,
         this.endIndexPaginate
       );
@@ -160,11 +147,36 @@ export default {
         this.sort.direction = "desc";
       }
     },
-    onChangePage(page) {
+    setPage(page = 1) {
       this.pagination.page = page;
     },
     defineSortClass(key) {
       return this.sort.key === key ? `arrow--${this.sort.direction}` : "";
+    },
+    filterRows() {
+      if (this.filter.value) {
+        return this.sortedRows.filter((row) => {
+          const dirtyValuesOfRow = JSON.stringify(Object.values(row));
+          return (
+            dirtyValuesOfRow
+              .toLowerCase()
+              .indexOf(this.filter.value.toLowerCase()) !== -1
+          );
+        });
+      } else {
+        return this.sortedRows;
+      }
+    },
+  },
+  watch: {
+    sortedRows: {
+      deep: true,
+      handler() {
+        this.setPage(1);
+      },
+    },
+    "filter.value"() {
+      this.setPage(1);
     },
   },
 };
