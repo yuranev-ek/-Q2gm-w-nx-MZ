@@ -1,5 +1,8 @@
 <template>
-  <div class="w-full relative overflow-auto">
+  <div class="w-full relative overflow-auto py-4">
+    <div class="pb-4">
+      <base-input v-model="filter.value" :placeholder="filter.placeholder" />
+    </div>
     <table class="table w-full border-collapse">
       <thead>
         <tr>
@@ -40,8 +43,13 @@
 </template>
 
 <script>
+// todo: throttle: filter
+import BaseInput from "@/components/BaseInput.vue";
 export default {
   name: "BaseTable",
+  components: {
+    BaseInput,
+  },
   props: {
     columns: {
       type: Array,
@@ -57,10 +65,7 @@ export default {
     },
   },
   computed: {
-    visibleColumns() {
-      return this.columns.filter((col) => col.visible).map((col) => col.key);
-    },
-    filteredRows() {
+    sortedRows() {
       if (this.sort.key) {
         const normalize = this.sort.direction === "asc" ? 1 : -1;
         const key = this.sort.key;
@@ -80,12 +85,30 @@ export default {
         return this.rows;
       }
     },
+    filteredRows() {
+      if (this.filter.value) {
+        return this.sortedRows.filter((row) => {
+          const dirtyValuesOfRow = JSON.stringify(Object.values(row));
+          return (
+            dirtyValuesOfRow
+              .toLowerCase()
+              .indexOf(this.filter.value.toLowerCase()) !== -1
+          );
+        });
+      } else {
+        return this.sortedRows;
+      }
+    },
   },
   data() {
     return {
       sort: {
         key: null,
         direction: "desc",
+      },
+      filter: {
+        value: null,
+        placeholder: "Search",
       },
     };
   },
