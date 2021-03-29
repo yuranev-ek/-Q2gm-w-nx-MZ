@@ -8,6 +8,7 @@
         class="w-full p-3 border-2 border-gray-200 rounded-xl hover:border-gray-300 focus:outline-none focus:border-blue-500 transition-colors"
         :placeholder="placeholder"
         @input="onInput"
+        :disabled="disabled"
       />
     </label>
   </div>
@@ -32,6 +33,10 @@ export default {
     placeholder: {
       type: String,
       default: null,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   model: {

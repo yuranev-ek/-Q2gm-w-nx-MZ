@@ -1,13 +1,15 @@
 <template>
   <div class="w-full py-4">
-    <div class="pb-4 flex">
+    <div class="mb-4 flex">
       <base-input
         v-model="filter.value"
         :placeholder="filter.placeholder"
         class="w-full"
+        :disabled="loading"
       />
       <button
         class="ml-3 bg-blue-700 text-white border border-blue-700 font-bold py-3 px-5 rounded-lg"
+        :disabled="loading"
       >
         {{ filter.placeholder }}
       </button>
@@ -63,21 +65,25 @@
     >
       <slot name="selectedRow" :selectedRow="selectedRow"></slot>
     </base-table-selected-row>
+    <base-loading :loading="loading" />
   </div>
 </template>
 
 <script>
 // todo: throttle: filter
 // todo: apply filter after click button
+// todo: slot for tr -> a href="tel" / a href="mailto"
 import BasePagination from "@/components/BasePagination.vue";
 import BaseInput from "@/components/BaseInput.vue";
 import BaseTableSelectedRow from "@/components/BaseTableSelectedRow.vue";
+import BaseLoading from "@/components/BaseLoading.vue";
 export default {
   name: "BaseTable",
   components: {
     BaseInput,
     BasePagination,
     BaseTableSelectedRow,
+    BaseLoading,
   },
   props: {
     columns: {
@@ -91,6 +97,10 @@ export default {
       default() {
         return [];
       },
+    },
+    loading: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
@@ -150,11 +160,13 @@ export default {
   },
   methods: {
     onClickSort(key) {
-      if (this.sort.key === key) {
-        this.sort.direction = this.sort.direction === "asc" ? "desc" : "asc";
-      } else {
-        this.sort.key = key;
-        this.sort.direction = "desc";
+      if (!this.loading) {
+        if (this.sort.key === key) {
+          this.sort.direction = this.sort.direction === "asc" ? "desc" : "asc";
+        } else {
+          this.sort.key = key;
+          this.sort.direction = "desc";
+        }
       }
     },
     setPage(page = 1) {

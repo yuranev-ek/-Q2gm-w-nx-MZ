@@ -1,6 +1,10 @@
 <template>
   <div class="container mx-auto px-4">
-    <base-table :rows="bigData" :columns="clientTableColumns">
+    <base-table
+      :rows="bigData"
+      :columns="clientTableColumns"
+      :loading="loading"
+    >
       <template v-slot:selectedRow="{ selectedRow }">
         <div class="flex flex-col">
           <p class="w-full mb-2">
@@ -45,7 +49,7 @@ export default {
     BaseTable,
   },
   mounted() {
-    this.getSmallData();
+    // this.getSmallData();
     this.getBigData();
   },
   data() {
@@ -90,21 +94,28 @@ export default {
         },
       ],
       selectedRow: null,
+      loading: false,
     };
   },
   methods: {
     async getSmallData() {
       try {
+        this.loading = true;
         this.smallData = await getSmallData();
       } catch (error) {
         console.log(error);
+      } finally {
+        this.loading = false;
       }
     },
     async getBigData() {
       try {
+        this.loading = true;
         this.bigData = await getBigData();
       } catch (error) {
         console.log(error);
+      } finally {
+        this.loading = false;
       }
     },
   },
