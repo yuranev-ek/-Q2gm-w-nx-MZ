@@ -36,6 +36,7 @@
         </thead>
         <tbody>
           <tr
+            @click="rowClick(row)"
             class="cursor-pointer hover:bg-gray-100"
             v-for="(row, rowIndex) of paginatedRows"
             :key="`row-${rowIndex}`"
@@ -49,13 +50,19 @@
         </tbody>
       </table>
     </div>
-
     <base-pagination
       v-if="pagesNumber"
       :pagesNumber="pagesNumber"
       :page="pagination.page"
       @on-change-page="setPage"
     />
+    <base-table-selected-row
+      class="selected-row-card"
+      v-if="selectedRow"
+      @unselect-row="rowClick"
+    >
+      <slot name="selectedRow" :selectedRow="selectedRow"></slot>
+    </base-table-selected-row>
   </div>
 </template>
 
@@ -64,11 +71,13 @@
 // todo: apply filter after click button
 import BasePagination from "@/components/BasePagination.vue";
 import BaseInput from "@/components/BaseInput.vue";
+import BaseTableSelectedRow from "@/components/BaseTableSelectedRow.vue";
 export default {
   name: "BaseTable",
   components: {
     BaseInput,
     BasePagination,
+    BaseTableSelectedRow,
   },
   props: {
     columns: {
@@ -136,6 +145,7 @@ export default {
         rowsPerPage: 50,
         page: 1,
       },
+      selectedRow: null,
     };
   },
   methods: {
@@ -166,6 +176,19 @@ export default {
       } else {
         return this.sortedRows;
       }
+    },
+    rowClick(row) {
+      this.$set(this, "selectedRow", row);
+      this.$emit("on-click-row", row); // just in case
+
+      this.$nextTick(() => {
+        const card = document.querySelector(".selected-row-card");
+        if (card) {
+          card.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
+      });
     },
   },
   watch: {
