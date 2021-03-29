@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col items-center my-8">
-    <div class="flex text-gray-700">
+    <div class="flex text-gray-700 w-full justify-center">
       <button
-        class="h-12 w-12 mr-1 flex justify-center items-center rounded-full bg-gray-200 cursor-pointer"
+        class="h-12 w-12 mr-1 flex justify-center items-center rounded-full bg-gray-200"
         :disabled="isFirstPage"
         :class="{
           'opacity-30': isFirstPage,
@@ -28,27 +28,27 @@
         <button
           @click="onClickPage(1)"
           v-if="!isFirstPage"
-          class="w-12 md:flex justify-center items-center hidden cursor-pointer leading-5 transition duration-150 ease-in rounded-full"
+          class="h-12 w-12 md:flex justify-center items-center leading-5 transition duration-150 ease-in rounded-full"
         >
           1
         </button>
         <button
           disabled
-          class="w-12 md:flex justify-center items-center hidden cursor-pointer leading-5 transition duration-150 ease-in rounded-full bg-gray-600 text-white"
+          class="h-12 w-12 md:flex justify-center items-center leading-5 transition duration-150 ease-in rounded-full bg-gray-600 text-white"
         >
           {{ page }}
         </button>
         <button
           @click="onClickPage(pagesNumber)"
           v-if="!isLastPage"
-          class="w-12 md:flex justify-center items-center hidden cursor-pointer leading-5 transition duration-150 ease-in rounded-full"
+          class="h-12 w-12 md:flex justify-center items-center leading-5 transition duration-150 ease-in rounded-full"
         >
           {{ pagesNumber }}
         </button>
       </div>
       <button
         @click="onClickPage(page + 1)"
-        class="h-12 w-12 ml-1 flex justify-center items-center rounded-full bg-gray-200 cursor-pointer"
+        class="h-12 w-12 ml-1 flex justify-center items-center rounded-full bg-gray-200"
         :disabled="isLastPage"
         :class="{
           'opacity-30': isLastPage,
