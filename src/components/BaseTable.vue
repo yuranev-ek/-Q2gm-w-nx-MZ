@@ -1,40 +1,55 @@
 <template>
-  <div class="w-full relative overflow-auto py-4">
-    <div class="pb-4">
-      <base-input v-model="filter.value" :placeholder="filter.placeholder" />
+  <div class="w-full py-4">
+    <div class="pb-4 flex">
+      <base-input
+        v-model="filter.value"
+        :placeholder="filter.placeholder"
+        class="w-full"
+      />
+      <button
+        class="ml-3 bg-blue-700 text-white border border-blue-700 font-bold py-3 px-5 rounded-lg"
+      >
+        {{ filter.placeholder }}
+      </button>
     </div>
-    <table class="table w-full border-collapse">
-      <thead>
-        <tr>
-          <template v-for="(col, colIndex) of columns">
-            <th
-              v-if="col.visible"
-              @click="onClickSort(col.key)"
-              :key="`col-${colIndex}`"
-              class="table__th relative p-3 font-bold uppercase text-sm border-b cursor-pointer bg-gray-200 whitespace-nowrap"
-            >
-              <div class="flex items-center">
-                <span>{{ col.label }}</span>
-                <i :class="defineSortClass(col.key)" class="arrow right-5"></i>
-              </div>
-            </th>
-          </template>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          class="cursor-pointer hover:bg-gray-100"
-          v-for="(row, rowIndex) of paginatedRows"
-          :key="`row-${rowIndex}`"
-        >
-          <template v-for="(td, tdIndex) of columns">
-            <td :key="`td-${tdIndex}`" v-if="td.visible" class="p-3 border-b">
-              {{ row[td.key] }}
-            </td>
-          </template>
-        </tr>
-      </tbody>
-    </table>
+    <div class="relative overflow-auto">
+      <table class="table w-full border-collapse">
+        <thead>
+          <tr>
+            <template v-for="(col, colIndex) of columns">
+              <th
+                v-if="col.visible"
+                @click="onClickSort(col.key)"
+                :key="`col-${colIndex}`"
+                class="table__th relative p-3 font-bold uppercase text-sm border-b cursor-pointer bg-gray-200 whitespace-nowrap"
+              >
+                <div class="flex items-center">
+                  <span>{{ col.label }}</span>
+                  <i
+                    :class="defineSortClass(col.key)"
+                    class="arrow right-5"
+                  ></i>
+                </div>
+              </th>
+            </template>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="cursor-pointer hover:bg-gray-100"
+            v-for="(row, rowIndex) of paginatedRows"
+            :key="`row-${rowIndex}`"
+          >
+            <template v-for="(td, tdIndex) of columns">
+              <td :key="`td-${tdIndex}`" v-if="td.visible" class="p-3 border-b">
+                {{ row[td.key] }}
+              </td>
+            </template>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <base-pagination
       v-if="pagesNumber"
       :pagesNumber="pagesNumber"
