@@ -7,12 +7,12 @@
         class="w-full"
         :disabled="loading"
       />
-      <button
+      <!-- <button
         class="ml-3 bg-blue-700 text-white border border-blue-700 font-bold py-3 px-5 rounded-lg"
         :disabled="loading"
       >
         {{ filter.placeholder }}
-      </button>
+      </button> -->
     </div>
     <div class="relative overflow-auto">
       <table class="table w-full border-collapse">
@@ -74,7 +74,7 @@
 
 <script>
 // todo: throttle: filter
-// todo: apply filter after click button
+// todo: apply filter after click button. how to do it normally?
 // todo: slot for tr -> a href="tel" / a href="mailto"
 import BasePagination from "@/components/BasePagination.vue";
 import BaseInput from "@/components/BaseInput.vue";
