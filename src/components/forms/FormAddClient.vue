@@ -6,14 +6,20 @@
       :key="field.key"
       v-model="formValues[field.key]"
       :type="field.type"
-      class="mb-4"
+      class="mb-5"
       :label="field.label"
       v-mask="field.mask"
       :placeholder="field.placeholder"
+      :error="errors[field.key]"
+      @on-input="field.validate"
     />
     <button
       class="mx-auto block bg-blue-700 text-white border border-blue-700 font-bold py-3 px-5 rounded-lg"
       type="submit"
+      :class="{
+        'cursor-not-allowed': !unableSubmitButton,
+      }"
+      :disabled="!unableSubmitButton"
     >
       {{ buttonSubmitLabel }}
     </button>
@@ -27,10 +33,19 @@ export default {
   components: {
     BaseInput,
   },
-  props: {},
+  computed: {
+    formHasErrors() {
+      return Object.values(this.errors).some((value) => value?.length);
+    },
+    formFilled() {
+      return Object.values(this.formValues).every((value) => value?.length);
+    },
+    unableSubmitButton() {
+      return !this.formHasErrors && this.formFilled;
+    },
+  },
   data() {
     return {
-      // Над таблицей должна присутствовать кнопка добавить, по нажатии на которую выпадает форма добавления ряда. Для каждого поля необходимо реализовать валидацию (id — число, firstName, lastName — буквы, email — формат email, phone — маска телефона).
       formValues: {
         id: null,
         firstName: null,
@@ -38,42 +53,69 @@ export default {
         email: null,
         phone: null,
       },
+      errors: {},
+      validate: {
+        id: {
+          regex: /^[0-9]+$/,
+          error: "Only numbers",
+        },
+        firstName: {
+          regex: /^[A-Za-z]+$/,
+          error: "Only letters",
+        },
+        lastName: {
+          regex: /^[A-Za-z]+$/,
+          error: "Only letters",
+        },
+        email: {
+          regex: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+          error: "You have entered an invalid email address!",
+        },
+      },
       fields: [
         {
           key: "id",
           type: "number",
-          value: null,
           label: "ID",
           placeholder: "Type ID",
+          validate: (value) => {
+            this.validateField(value, "id");
+          },
         },
         {
           key: "firstName",
           type: "text",
-          value: null,
           label: "First Name",
           placeholder: "Type a first name",
+          validate: (value) => {
+            this.validateField(value, "firstName");
+          },
         },
         {
           key: "lastName",
           type: "text",
-          value: null,
           label: "Last Name",
           placeholder: "Type a last name",
+          validate: (value) => {
+            this.validateField(value, "lastName");
+          },
         },
         {
           key: "email",
           type: "email",
-          value: null,
           label: "Email",
           placeholder: "Type an email",
+          validate: (value) => {
+            this.validateField(value, "email");
+          },
         },
         {
           key: "phone",
           type: "tel",
-          value: null,
           label: "Phone",
           mask: "(###)###-####",
           placeholder: "(111)111-1111",
+          validate: () => {},
         },
       ],
       title: "Add Client",
@@ -82,7 +124,30 @@ export default {
   },
   methods: {
     submit() {
-      this.$emit("submit", this.formValues);
+      if (this.unableSubmitButton) {
+        this.$emit("submit", this.formValues);
+        this.clearForm();
+      }
+    },
+    validateField(value, key) {
+      let isValid = true;
+
+      if (value) {
+        const regex = this.validate[key].regex;
+        isValid = regex.test(value);
+      }
+
+      this.$set(this.errors, key, !isValid ? this.validate[key].error : null);
+    },
+    clearForm() {
+      this.formValues = {
+        id: null,
+        firstName: null,
+        lastName: null,
+        email: null,
+        phone: null,
+      };
+      this.errors = {};
     },
   },
 };
