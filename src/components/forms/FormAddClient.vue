@@ -8,6 +8,8 @@
       :type="field.type"
       class="mb-4"
       :label="field.label"
+      v-mask="field.mask"
+      :placeholder="field.placeholder"
     />
     <button
       class="mx-auto block bg-blue-700 text-white border border-blue-700 font-bold py-3 px-5 rounded-lg"
@@ -42,30 +44,36 @@ export default {
           type: "number",
           value: null,
           label: "ID",
+          placeholder: "Type ID",
         },
         {
           key: "firstName",
           type: "text",
           value: null,
           label: "First Name",
+          placeholder: "Type a first name",
         },
         {
           key: "lastName",
           type: "text",
           value: null,
           label: "Last Name",
+          placeholder: "Type a last name",
         },
         {
           key: "email",
           type: "email",
           value: null,
           label: "Email",
+          placeholder: "Type an email",
         },
         {
           key: "phone",
           type: "tel",
           value: null,
           label: "Phone",
+          mask: "(###)###-####",
+          placeholder: "(111)111-1111",
         },
       ],
       title: "Add Client",
