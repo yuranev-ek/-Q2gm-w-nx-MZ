@@ -1,4 +1,4 @@
-# oxem-vue-test-task
+# vue-table
 
 ## Project setup
 ```
