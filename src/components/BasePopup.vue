@@ -7,11 +7,11 @@
   >
     <div
       id="modal"
-      class="relative w-5/6 md:w-1/2 h-1/2 p-5 md:p-10 bg-white rounded shadow-lg duration-300"
+      class="relative w-3/4 md:w-1/2 h-auto p-5 md:p-10 bg-white rounded shadow-lg duration-300"
     >
       <button
         @click="close"
-        class="absolute top-3 right-3 bg-red-700 text-white border border-red-700 font-bold py-3 px-5 rounded-lg"
+        class="absolute top-3 right-3 bg-red-700 text-white border border-red-700 font-bold py-1 px-3 rounded-lg"
       >
         {{ buttonCloseLabel }}
       </button>

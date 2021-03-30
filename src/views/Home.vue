@@ -1,5 +1,12 @@
 <template>
-  <div class="container mx-auto px-4">
+  <div class="container mx-auto p-4">
+    <button
+      class="bg-green-700 text-white border border-green-700 font-bold py-3 px-5 rounded-lg"
+      type="button"
+      @click="togglePopupAddClient(true)"
+    >
+      {{ buttonAddClientLabel }}
+    </button>
     <base-table
       :rows="bigData"
       :columns="clientTableColumns"
@@ -37,16 +44,27 @@
         </div>
       </template>
     </base-table>
+    <base-popup @close="togglePopupAddClient" :visible="popupAddClientVisible">
+      <slot>
+        <form-add-client @submit="addClient" />
+      </slot>
+    </base-popup>
   </div>
 </template>
 
 <script>
+// todo: create component: BaseButton (color, type, label)
+// todo: one array for data
 import { getSmallData, getBigData } from "@/api";
 import BaseTable from "@/components/BaseTable.vue";
+import BasePopup from "@/components/BasePopup.vue";
+import FormAddClient from "@/components/forms/FormAddClient.vue";
 export default {
   name: "Home",
   components: {
     BaseTable,
+    BasePopup,
+    FormAddClient,
   },
   mounted() {
     // this.getSmallData();
@@ -95,6 +113,8 @@ export default {
       ],
       selectedRow: null,
       loading: false,
+      buttonAddClientLabel: "Add client",
+      popupAddClientVisible: false,
     };
   },
   methods: {
@@ -117,6 +137,13 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    togglePopupAddClient(bool) {
+      this.popupAddClientVisible = bool;
+    },
+    addClient(client) {
+      this.bigData = [client, ...this.bigData];
+      this.togglePopupAddClient(false);
     },
   },
 };
