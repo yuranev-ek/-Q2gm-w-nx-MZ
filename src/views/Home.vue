@@ -1,14 +1,26 @@
 <template>
   <div class="container mx-auto p-4">
-    <button
-      class="bg-green-700 text-white border border-green-700 font-bold py-3 px-5 rounded-lg"
-      type="button"
-      @click="togglePopupAddClient(true)"
-    >
-      {{ buttonAddClientLabel }}
-    </button>
+    <div class="flex justify-between items-center">
+      <button
+        class="bg-green-700 text-white border border-green-700 font-bold py-3 px-5 rounded-lg"
+        type="button"
+        @click="togglePopupAddClient(true)"
+      >
+        {{ buttonAddClientLabel }}
+      </button>
+      <div class="flex">
+        <label class="flex items-center mr-4">
+          Small Data
+          <input type="radio" v-model="dataSize" value="small" class="ml-2" />
+        </label>
+        <label class="flex items-center">
+          Big Data
+          <input type="radio" v-model="dataSize" value="big" class="ml-2" />
+        </label>
+      </div>
+    </div>
     <base-table
-      :rows="bigData"
+      :rows="clientData"
       :columns="clientTableColumns"
       :loading="loading"
     >
@@ -19,6 +31,7 @@
             <b>{{ selectedRow.firstName }} {{ selectedRow.lastName }}</b>
           </p>
           <textarea
+            v-if="selectedRow.description"
             :value="selectedRow.description"
             class="w-full p-3 mb-2 border-2 border-gray-200 rounded-xl hover:border-gray-300 focus:outline-none focus:border-blue-500 transition-colors"
             readonly
@@ -54,7 +67,6 @@
 
 <script>
 // todo: create component: BaseButton (color, type, label)
-// todo: one array for data
 import { getSmallData, getBigData } from "@/api";
 import BaseTable from "@/components/BaseTable.vue";
 import BasePopup from "@/components/BasePopup.vue";
@@ -66,14 +78,10 @@ export default {
     BasePopup,
     FormAddClient,
   },
-  mounted() {
-    // this.getSmallData();
-    this.getBigData();
-  },
   data() {
     return {
-      smallData: [],
-      bigData: [],
+      dataSize: null,
+      clientData: [],
       clientTableColumns: [
         {
           key: "id",
@@ -118,22 +126,14 @@ export default {
     };
   },
   methods: {
-    async getSmallData() {
+    async getClients() {
       try {
+        this.clientData = [];
         this.loading = true;
-        this.smallData = await getSmallData();
+        this.clientData =
+          this.dataSize === "small" ? await getSmallData() : await getBigData();
       } catch (error) {
-        console.log(error);
-      } finally {
-        this.loading = false;
-      }
-    },
-    async getBigData() {
-      try {
-        this.loading = true;
-        this.bigData = await getBigData();
-      } catch (error) {
-        console.log(error);
+        alert("Error loading data");
       } finally {
         this.loading = false;
       }
@@ -142,8 +142,13 @@ export default {
       this.popupAddClientVisible = bool;
     },
     addClient(client) {
-      this.bigData = [client, ...this.bigData];
+      this.clientData = [client, ...this.clientData];
       this.togglePopupAddClient(false);
+    },
+  },
+  watch: {
+    dataSize() {
+      this.getClients();
     },
   },
 };

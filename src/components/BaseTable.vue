@@ -66,6 +66,9 @@
       <slot name="selectedRow" :selectedRow="selectedRow"></slot>
     </base-table-selected-row>
     <base-loading :loading="loading" />
+    <div v-if="!rows.length && !loading" class="text-center py-2">
+      {{ noDataLabel }}
+    </div>
   </div>
 </template>
 
@@ -101,6 +104,10 @@ export default {
     loading: {
       type: Boolean,
       default: false,
+    },
+    noDataLabel: {
+      type: String,
+      default: "No data",
     },
   },
   computed: {
